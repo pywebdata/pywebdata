@@ -27,9 +27,16 @@ class Input(object):
         self._default = default
         self._incr = incr
         self.value = None
+        self.valid = True
 
     def update(self, value):
-        self.value = value
+        satisfy_min = not self._min or (self._min and value >= self._min)
+        satisfy_max = not self._max or (self._max and value <= self._max)
+        if satisfy_min and satisfy_max:
+            self.value = value
+            self.valid = True
+        else:
+            self.valid = False
 
     def set_incr(self, incr):
         self._incr = incr
