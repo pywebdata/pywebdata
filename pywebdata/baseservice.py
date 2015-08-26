@@ -30,29 +30,28 @@ class BaseService(object):
         inputs = self.get_input_values()
         return self.url.substitute(inputs)
     
-    def query(self, param_dict={}, **kwargs):
-        
-        if param_dict:
-            self.update_parameters(**param_dict)
-        else:
-            self.update_parameters(**kwargs)
-
+    def _query_one(self, **kwargs):
+        self.update_parameters(**kwargs)
         url = self.convert_url()
         r = requests.get(url)
         results = output_parsers.get('json', lambda x:x)(r.text)
 
         return  self.parse_results(results)
 
-    def query_many(self, dict_list=[]):
+    def _query_many(self, dict_list=[]):
         results = []
         for d in dict_list:
-            res = self.query(d)
+            res = self._query_one(**d)
             results.extend(res)
         return results
 
-    def conditional_query(self, qry_string=None):
+    def _conditional_query(self, qry_string=None):
         inputs = self.get_input_objects()
         conditions = parse_query(qry_string)
+
+        for condition in conditions.keys():
+            if condition not in inputs.keys():
+                raise Exception
 
         def attach_input_name(qry):
             return dict(zip(inputs.keys(), qry))
@@ -61,8 +60,21 @@ class BaseService(object):
         input_ranges = map(get_input_range, inputs.items())
         queries = imap(attach_input_name, product(*input_ranges))
 
-        return self.query_many(queries)
+        return self._query_many(queries)
     
+    def query(self, qry=None, **kwargs):
+
+        if isinstance(qry, dict):
+            return self._query_one(**qry)
+
+        if isinstance(qry, str):
+            return self._conditional_query(qry)
+
+        if isinstance(qry, list):
+            return self._query_many(qry)
+
+        return self._query_one(**kwargs)
+
     def parse_results(self, results):
         parser = self.get_parser()
         return map(self.parse_row, parser(results))
@@ -86,6 +98,7 @@ class BaseService(object):
     @classmethod
     def add_input(cls, name, iotype, required=True, min=None, max=None, default=None, incr=None):
         _input = Input(iotype, required, min, max, default, incr)
+        _input.name = name
         setattr(cls, name, _input)
     
     @classmethod
@@ -116,7 +129,7 @@ class BaseService(object):
     @classmethod
     def get_output_names(cls):
         return cls.get_output_objects().keys()
-        
+
     @classmethod
     def get_params(cls, param_type, f=lambda x:x):
         param_dict = {}
