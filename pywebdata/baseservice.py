@@ -77,7 +77,10 @@ class BaseService(object):
 
     def parse_results(self, results):
         parser = self.get_parser()
-        return map(self.parse_row, parser(results))
+        if isinstance(results, list):
+            return map(self.parse_row, parser(results))
+        else:
+            return [self.parse_row(parser(results))]
 
     def parse_row(self, row):
         result_row = {}
