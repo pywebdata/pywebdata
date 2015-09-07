@@ -77,7 +77,7 @@ class BaseService(object):
 
     def parse_results(self, results):
         parser = self.get_parser()
-        if isinstance(results, list):
+        if isinstance(parser(results), list):
             return map(self.parse_row, parser(results))
         else:
             return [self.parse_row(parser(results))]
