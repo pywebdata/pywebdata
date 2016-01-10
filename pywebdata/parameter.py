@@ -4,12 +4,15 @@ from itertools import ifilter
 iotypes = {'float': float, 'int': int, 'str': str}
 
 def frange(a, b=None, incr=1.):
-  if b is None:
-    b, a = a, 0.
-  else:
-    a = float(a)
-  count = int(math.ceil(b - a)/incr)
-  return (a + n*incr for n in range(count))
+    """reproduces Python's standard range() function, 
+    but allows for float increments
+    """
+    if b is None:
+      b, a = a, 0.
+    else:
+      a = float(a)
+    count = int(math.ceil(b - a)/incr)
+    return (a + n*incr for n in range(count))
 
 class Parameter(object):
     def __init__(self, iotype):
