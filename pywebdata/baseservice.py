@@ -29,13 +29,12 @@ class BaseService(object):
     def convert_url(self):
         inputs = self.get_input_values()
         return self.url.substitute(inputs)
-    
+
     def _query_one(self, **kwargs):
         self.update_parameters(**kwargs)
         url = self.convert_url()
         r = requests.get(url)
         results = output_parsers.get('json', lambda x:x)(r.text)
-
         return  self.parse_results(results)
 
     def _query_many(self, dict_list=[]):
@@ -61,7 +60,7 @@ class BaseService(object):
         queries = imap(attach_input_name, product(*input_ranges))
 
         return self._query_many(queries)
-    
+
     def query(self, qry=None, **kwargs):
 
         if isinstance(qry, dict):
@@ -97,26 +96,26 @@ class BaseService(object):
     @classmethod
     def add_url(cls, url):
         setattr(cls, 'url', Template(url))
-    
+
     @classmethod
     def add_input(cls, name, iotype, required=True, min=None, max=None, default=None, incr=None):
         _input = Input(iotype, required, min, max, default, incr)
         _input.name = name
         setattr(cls, name, _input)
-    
+
     @classmethod
     def add_output(cls, name, iotype):
         _output = Output(iotype)
         setattr(cls, name, _output)
-    
+
     @classmethod
     def add_parser(cls, parse_func):
         setattr(cls, 'parser', parse_func)
-    
+
     @classmethod
     def get_parser(cls):
         return getattr(cls, 'parser')
-    
+
     @classmethod
     def get_input_objects(cls):
         return cls.get_params(Input)
