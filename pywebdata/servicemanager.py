@@ -7,12 +7,12 @@ import exceptions as excpt
 
 class ServiceManager(object):
 
-    service_dirs = [os.path.abspath(os.path.join(os.path.dirname(__file__), 'services'))]
+    service_dir = [os.path.join(os.path.dirname(__file__), 'services')]
     is_initialized = False
 
     @classmethod
     def load_all(cls):
-        map(cls.load_from_directory, cls.service_dirs)
+        map(cls.load_from_directory, cls.service_dir)
         cls._set_initialized()
 
     @staticmethod
@@ -27,7 +27,7 @@ class ServiceManager(object):
     @classmethod
     def register_path(cls, path):
         if not cls.is_initialized:
-            cls.service_dirs.append(path)
+            cls.service_dir.append(path)
         else:
             raise excpt.ServiceManagerInitializedException
 

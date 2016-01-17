@@ -1,32 +1,41 @@
 import math
 from itertools import ifilter
 
-iotypes = {'float': float, 'int': int}
+iotypes = {'float': float, 'int': int, 'str': str}
 
 def frange(a, b=None, incr=1.):
-  if b is None:
-    b, a = a, 0.
-  else:
-    a = float(a)
-  count = int(math.ceil(b - a)/incr)
-  return (a + n*incr for n in range(count))
+    """reproduces Python's standard range() function, 
+    but allows for float increments
+    """
+    if b is None:
+      b, a = a, 0.
+    else:
+      a = float(a)
+    count = int(math.ceil(b - a)/incr)
+    return (a + n*incr for n in range(count))
 
-class Output(object):
-    def __init__(self, iotype, f_parse=None):
+class Parameter(object):
+    def __init__(self, iotype):
         self.iotype = iotypes[iotype]
         self.value = None
+
+class Output(Parameter):
+    def __init__(self, iotype, f_parse=None):
+        Parameter.__init__(self, iotype)
         self.f_parse = f_parse
 
-class Input(object):
+    def update(self, value):
+        self.value = value
+
+class Input(Parameter):
 
     def __init__(self, iotype, required=True, min=None, max=None, default=None, incr=None):
-        self.iotype = iotypes[iotype]
+        Parameter.__init__(self, iotype)
         self.is_required = required
         self._min = min
         self._max = max
         self._default = default
         self._incr = incr
-        self.value = None
         self.valid = True
 
     def update(self, value):
