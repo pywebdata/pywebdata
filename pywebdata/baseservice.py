@@ -24,7 +24,9 @@ class BaseService(object):
 
     def update_parameters(self, **kwargs):
         for param_name, param_value in kwargs.items():
-            getattr(self, param_name).update(param_value)
+            param = getattr(self, param_name, None)
+            if param:
+                param.update(param_value)
 
     def convert_url(self):
         inputs = self.get_input_values()

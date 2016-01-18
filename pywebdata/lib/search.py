@@ -5,7 +5,10 @@ processed = {}
 parents = {}
 
 def initialize(graph):
-    for v in graph.edges.keys():
+    global finished
+    finished = False
+
+    for v in graph.vertices:
         discovered[v] = False
         processed[v] = False
         parents[v] = None
@@ -49,7 +52,7 @@ def find_path(start, end, parents):
 
 def topological_sort(graph):
     """Returns the root of the input graph"""
-    for v in graph.edges.keys():
+    for v in graph.vertices:
         if not discovered[v]:
             dfs(graph, v)
     for v in processed_stack:

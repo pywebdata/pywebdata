@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class EdgeNode(object):
     def __init__(self, endpoint, weight = 0):
         self.endpoint = endpoint
@@ -8,22 +10,22 @@ class EdgeNode(object):
         if self is None:
             return 'EdgeNode None'
         else:
-            return 'EdgeNode %s' % self.data
+            return 'EdgeNode %s' % self.endpoint
 
 class Graph(object):
     def __init__(self):
-        self.edges = {}
-        self.degrees = {}
+        self.edges = defaultdict(lambda: None)
+        self.vertices = []
+        self.degrees = defaultdict(int)
         self.n_vertices = 0
         self.n_edges = 0
         self.directed = False
 
     def __str__(self):
-        '''print_graph in the book'''
         string = ''
-        for key in self.edges.keys():
-            string = ''.join([string, 'Node %s, ' %key])
-            edge = self.edges[key]
+        for vertex in self.vertices:
+            string = ''.join([string, 'Node %s, ' %vertex])
+            edge = self.edges[vertex]
             string = ''.join([string, 'Neighbors:'])
             while edge:
                 string = ''.join([string, ' ', str(edge.endpoint)])
@@ -32,6 +34,10 @@ class Graph(object):
         return string
 
     def add_edge(self, origin, dest, weight = 0):
+        for v in [origin, dest]:
+            if v not in self.vertices:
+                self.vertices.append(v)
+
         if origin not in self.edges:
             self.edges[origin] = None
             self.degrees[origin] = 0
@@ -52,3 +58,7 @@ class Graph(object):
             edge.next = self.edges[dest]
             self.edges[dest] = edge
             self.degrees[dest] += 1
+
+    def add_vertex(self, vertex):
+        self.vertices.append(vertex)
+        self.edges[vertex] = None
