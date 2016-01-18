@@ -1,5 +1,6 @@
 from lib.graph import Graph
 import lib.search as search
+from inputservice import InputService
 
 class Topology(object):
     def __init__(self):
@@ -8,6 +9,9 @@ class Topology(object):
 
     def connect(self, u, v):
         self._graph.add_edge(u, v)
+
+    def add(self, service):
+        self._graph.add_vertex(service)
 
     def read_input(self, input_dict):
         """Creates a copy of the input dictionary to the topology"""
@@ -22,3 +26,6 @@ class Topology(object):
             output = service.query(**self._params)[0]
             service.update_parameters(**output)
             self._params.update(output)
+
+    def output(self):
+        return self._params
