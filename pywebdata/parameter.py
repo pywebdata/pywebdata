@@ -1,7 +1,7 @@
 import math
 from itertools import ifilter
 
-iotypes = {'float': float, 'int': int}
+iotypes = {'float': float, 'int': int, 'str': str}
 
 def frange(a, b=None, incr=1.):
   if b is None:
